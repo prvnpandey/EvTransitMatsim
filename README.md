@@ -14,11 +14,11 @@ Contributing
 
 License
 
-Acknowledgments
+Acknowledgements
 
 #Introduction
 
-The goal of this project is to extend MATSim's capabilities to support the simulation of electric buses and their integration into public transit networks. This includes modeling:
+This project aims to extend MATSim's capabilities to support the simulation of electric buses and their integration into public transit networks. This includes modelling:
 
 ##Electric bus energy consumption.
 
@@ -26,7 +26,7 @@ The goal of this project is to extend MATSim's capabilities to support the simul
 
 ##Impact of electric buses on transit operations and energy grids.
 
-This module is particularly useful for researchers, urban planners, and policymakers interested in evaluating the feasibility and impact of transitioning to electric public transit systems.
+This module is handy for researchers, urban planners, and policymakers interested in evaluating the feasibility and impact of transitioning to electric public transit systems.
 
 #Features
 Electric Bus Energy Consumption Model: Simulates the energy consumption of electric buses based on route characteristics, traffic conditions, and vehicle specifications.
@@ -61,7 +61,7 @@ Run Simulations:
 Use the provided configuration files to run simulations. Example configurations are located in the src/main/resources directory.
 
 Usage
-To run a simulation with the Electric Bus and Transit Module:
+To simulate with the Electric Bus and Transit Module:
 
 Prepare Input Data:
 
@@ -72,13 +72,13 @@ Electric bus specifications (e.g., battery capacity, energy consumption rates).
 Charging station locations and specifications.
 
 Configure Simulation:
-Modify the config.xml file to include electric bus and charging parameters. Example:
+Modify the config.xml file to include the electric bus and charging parameters. Example:
 
-xml
+XML
 Copy
-<module name="electricBus">
+<module name="electric bus">
     <param name="batteryCapacity" value="300" /> <!-- in kWh -->
-    <param name="chargingPower" value="150" /> <!-- in kW -->
+    <param name="charging power" value="150" /> <!-- in kW -->
     <param name="chargingStationsFile" value="path/to/charging/stations.xml" />
 </module>
 Run HTML
@@ -87,7 +87,7 @@ Execute the simulation using the MATSim command-line interface:
 
 bash
 Copy
-java -cp matsim-electric-bus.jar org.matsim.run.Controler config.xml
+java -cp matsim-electric-bus.jar org.matsim.run.Controller config.xml
 Analyze Results:
 Output files will include energy consumption statistics, charging logs, and transit performance metrics.
 
@@ -121,7 +121,7 @@ This project is licensed under the GNU General Public License v3.0. See the LICE
 
 #Acknowledgments
 
-The MATSim community for providing a robust and extensible simulation framework.
+The MATSim community provides a robust and extensible simulation framework.
 
 Contributors to this project for their valuable input and efforts.
 

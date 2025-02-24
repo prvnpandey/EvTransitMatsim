@@ -1,4 +1,4 @@
-#Electric Bus and Transit Module in MATSim
+Electric Bus and Transit Module in MATSim
 
 This repository contains the implementation and contribution of an Electric Bus and Transit Module for MATSim (Multi-Agent Transport Simulation), a widely used open-source framework for simulating large-scale transportation systems. The module integrates electric buses into the MATSim ecosystem, enabling the simulation of electric public transit systems, including charging infrastructure, energy consumption, and scheduling.
 

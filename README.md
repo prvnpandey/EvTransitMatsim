@@ -1,7 +1,7 @@
-#Electric Bus and Transit Module in MATSim
+Electric Bus and Transit Module in MATSim
 This repository contains the implementation and contribution of an Electric Bus and Transit Module for MATSim (Multi-Agent Transport Simulation), a widely used open-source framework for simulating large-scale transportation systems. The module integrates electric buses into the MATSim ecosystem, enabling the simulation of electric public transit systems, including charging infrastructure, energy consumption, and scheduling.
 
-#Table of Contents
+Table of Contents
 Introduction
 
 Features
@@ -16,19 +16,19 @@ License
 
 Acknowledgements
 
-#Introduction
+Introduction
 
 This project aims to extend MATSim's capabilities to support the simulation of electric buses and their integration into public transit networks. This includes modelling:
 
-##Electric bus energy consumption.
+1. Electric bus energy consumption.
 
-##Charging infrastructure placement and scheduling.
+2. Charging infrastructure placement and scheduling.
 
-##Impact of electric buses on transit operations and energy grids.
+3. Impact of electric buses on transit operations and energy grids.
 
 This module is handy for researchers, urban planners, and policymakers interested in evaluating the feasibility and impact of transitioning to electric public transit systems.
 
-#Features
+Features
 Electric Bus Energy Consumption Model: Simulates the energy consumption of electric buses based on route characteristics, traffic conditions, and vehicle specifications.
 
 Charging Infrastructure: Supports the placement and operation of charging stations at transit hubs, depots, and along routes.
@@ -39,10 +39,10 @@ Integration with MATSim Transit: Seamlessly integrates with MATSim's existing tr
 
 Scenario Analysis: Enables comparison of different electric bus deployment strategies, such as battery size, charging locations, and fleet composition.
 
-#Installation
+Installation
 To use this module, follow these steps:
 
-#Clone the Repository:
+Clone the Repository:
 
 bash
 Copy
@@ -115,11 +115,11 @@ Open a pull request on GitHub.
 
 Please ensure your code follows the project's coding standards and includes appropriate documentation.
 
-#License
+License
 
 This project is licensed under the GNU General Public License v3.0. See the LICENSE file for details.
 
-#Acknowledgments
+Acknowledgments
 
 The MATSim community provides a robust and extensible simulation framework.
 

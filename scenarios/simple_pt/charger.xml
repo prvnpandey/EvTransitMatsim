@@ -1,0 +1,5 @@
+<!DOCTYPE chargers SYSTEM "http://matsim.org/files/dtd/chargers_v1.dtd">
+
+<chargers>
+    <charger id="busDepot" link="1-2" plug_power="100000.0" plug_count="5" type="fast"/>
+</chargers>

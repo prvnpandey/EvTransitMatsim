@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE plans SYSTEM "http://www.matsim.org/files/dtd/plans_v4.dtd">
+<plans>
+	<person employed="yes" age="30" id="1">
+	    <plan selected="yes">
+	        <act end_time="05:00:00" y="10" x="0" type="home"/>
+	        <leg mode="car"/>
+	        <act end_time="05:25:00" y="10" x="2015" type="work"/>
+	        <leg mode="car"/>
+	        <act y="10" x="0" type="home"/>
+	    </plan>
+	</person>
+	
+	<person employed="yes" age="30" id="2">
+	    <plan selected="yes">
+	        <act end_time="05:00:00" y="10" x="0" type="home"/>
+	        <leg mode="pt"/>
+	        <act end_time="05:25:00" y="10" x="2015" type="work"/>
+	        <leg mode="pt"/>
+	        <act y="10" x="0" type="home"/>
+	    </plan>
+	</person>
+
+</plans>

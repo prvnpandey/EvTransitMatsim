@@ -1,0 +1,9 @@
+<!DOCTYPE chargers SYSTEM "http://matsim.org/files/dtd/chargers_v1.dtd">
+<chargers>
+    <charger id="charger_1" link="10_1" type="fast" plug_power="50" />
+    <charger id="charger_2" link="11_1" type="slow" plug_power="20" />
+    <charger id="charger_3" link="12_1" type="fast" plug_power="50" />
+    <charger id="charger_4" link="13_1" type="slow" plug_power="20" />
+    <charger id="charger_5" link="14_1" type="fast" plug_power="50" />
+    <!-- Add more chargers as needed -->
+</chargers>

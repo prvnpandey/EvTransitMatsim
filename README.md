@@ -1,69 +1,133 @@
-# matsim-example-project
+#Electric Bus and Transit Module in MATSim
 
-A small example of how to use MATSim as a library.
+This repository contains the implementation and contribution of an Electric Bus and Transit Module for MATSim (Multi-Agent Transport Simulation), a widely used open-source framework for simulating large-scale transportation systems. The module integrates electric buses into the MATSim ecosystem, enabling the simulation of electric public transit systems, including charging infrastructure, energy consumption, and scheduling.
 
-By default, this project uses the latest (pre-)release. In order to use a different version, edit `pom.xml`.
+#Table of Contents
 
-A recommended directory structure is as follows:
-* `src` for sources
-* `original-input-data` for original input data (typically not in MATSim format)
-* `scenarios` for MATSim scenarios, i.e. MATSim input and output data.  A good way is the following:
-  * One subdirectory for each scenario, e.g. `scenarios/mySpecialScenario01`.
-  * This minimally contains a config file, a network file, and a population file.
-  * Output goes one level down, e.g. `scenarios/mySpecialScenario01/output-from-a-good-run/...`.
-  
-  
-### Import into eclipse
+Introduction
 
-1. download a modern version of eclipse. This should have maven and git included by default.
-1. `file->import->git->projects from git->clone URI` and clone as specified above.  _It will go through a 
-sequence of windows; it is important that you import as 'general project'._
-1. `file->import->maven->existing maven projects`
+Features
 
-Sometimes, step 3 does not work, in particular after previously failed attempts.  Sometimes, it is possible to
-right-click to `configure->convert to maven project`.  If that fails, the best thing seems to remove all 
-pieces of the failed attempt in the directory and start over.
+Installation
 
-### Import into IntelliJ
+Usage
 
-`File -> New -> Project from Version Control` paste the repository url and hit 'clone'. IntelliJ usually figures out
-that the project is a maven project. If not: `Right click on pom.xml -> import as maven project`.
+Contributing
 
-### Java Version
+License
 
-The project uses Java 11. Usually a suitable SDK is packaged within IntelliJ or Eclipse. Otherwise, one must install a 
-suitable sdk manually, which is available [here](https://openjdk.java.net/)
+Acknowledgments
 
-### Building and Running it locally
+#Introduction
 
-You can build an executable jar-file by executing the following command:
+The goal of this project is to extend MATSim's capabilities to support the simulation of electric buses and their integration into public transit networks. This includes modeling:
 
-```sh
-./mvnw clean package
-```
+#Electric bus energy consumption.
 
-or on Windows:
+#Charging infrastructure placement and scheduling.
 
-```sh
-mvnw.cmd clean package
-```
+#Impact of electric buses on transit operations and energy grids.
 
-This will download all necessary dependencies (it might take a while the first time it is run) and create a file `matsim-example-project-0.0.1-SNAPSHOT.jar` in the top directory. This jar-file can either be double-clicked to start the MATSim GUI, or executed with Java on the command line:
+This module is particularly useful for researchers, urban planners, and policymakers interested in evaluating the feasibility and impact of transitioning to electric public transit systems.
 
-```sh
-java -jar matsim-example-project-0.0.1-SNAPSHOT.jar
-```
+#Features
+Electric Bus Energy Consumption Model: Simulates the energy consumption of electric buses based on route characteristics, traffic conditions, and vehicle specifications.
 
+Charging Infrastructure: Supports the placement and operation of charging stations at transit hubs, depots, and along routes.
 
+Charging Scheduling: Optimizes charging schedules to minimize downtime and ensure bus availability.
 
-### Licenses
-(The following paragraphs need to be adjusted according to the specifications of your project.)
+Integration with MATSim Transit: Seamlessly integrates with MATSim's existing transit simulation capabilities.
 
-The **MATSim program code** in this repository is distributed under the terms of the [GNU General Public License as published by the Free Software Foundation (version 2)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html). The MATSim program code are files that reside in the `src` directory hierarchy and typically end with `*.java`.
+Scenario Analysis: Enables comparison of different electric bus deployment strategies, such as battery size, charging locations, and fleet composition.
 
-The **MATSim input files, output files, analysis data and visualizations** are licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
-<a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/80x15.png" /></a><br /> MATSim input files are those that are used as input to run MATSim. They often, but not always, have a header pointing to matsim.org. They typically reside in the `scenarios` directory hierarchy. MATSim output files, analysis data, and visualizations are files generated by MATSim runs, or by postprocessing.  They typically reside in a directory hierarchy starting with `output`.
+#Installation
 
-**Other data files**, in particular in `original-input-data`, have their own individual licenses that need to be individually clarified with the copyright holders.
+To use this module, follow these steps:
 
+#Clone the Repository:
 
+bash
+Copy
+git clone https://github.com/prvnpandey/EvTransitMatsim.git
+cd EvTransitMatsim
+Install Dependencies:
+Ensure you have MATSim installed. You can download MATSim from the official website.
+
+Build the Module:
+Use Maven to build the project:
+
+bash
+Copy
+mvn clean install
+Run Simulations:
+Use the provided configuration files to run simulations. Example configurations are located in the src/main/resources directory.
+
+Usage
+To run a simulation with the Electric Bus and Transit Module:
+
+Prepare Input Data:
+
+Transit schedule (in MATSim format).
+
+Electric bus specifications (e.g., battery capacity, energy consumption rates).
+
+Charging station locations and specifications.
+
+Configure Simulation:
+Modify the config.xml file to include electric bus and charging parameters. Example:
+
+xml
+Copy
+<module name="electricBus">
+    <param name="batteryCapacity" value="300" /> <!-- in kWh -->
+    <param name="chargingPower" value="150" /> <!-- in kW -->
+    <param name="chargingStationsFile" value="path/to/charging/stations.xml" />
+</module>
+Run HTML
+Run the Simulation:
+Execute the simulation using the MATSim command-line interface:
+
+bash
+Copy
+java -cp matsim-electric-bus.jar org.matsim.run.Controler config.xml
+Analyze Results:
+Output files will include energy consumption statistics, charging logs, and transit performance metrics.
+
+Contributing
+We welcome contributions to this project! If you'd like to contribute, please follow these steps:
+
+Fork the repository.
+
+Create a new branch for your feature or bugfix:
+
+bash
+Copy
+git checkout -b feature/your-feature-name
+Commit your changes:
+
+bash
+Copy
+git commit -m "Add your commit message here"
+Push your branch:
+
+bash
+Copy
+git push origin feature/your-feature-name
+Open a pull request on GitHub.
+
+Please ensure your code follows the project's coding standards and includes appropriate documentation.
+
+#License
+
+This project is licensed under the GNU General Public License v3.0. See the LICENSE file for details.
+
+#Acknowledgments
+
+The MATSim community for providing a robust and extensible simulation framework.
+
+Contributors to this project for their valuable input and efforts.
+
+For questions or feedback, please open an issue or contact the maintainers.
+
+Happy simulating! 🚌⚡

@@ -24,3 +24,7 @@ hs_err_pid*
 # IntelliJ
 /.idea/
 *.iml
+
+# Specific files to ignore
+links.dbf
+output_events.xml

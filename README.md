@@ -1,131 +1,148 @@
-Electric Bus and Transit Module in MATSim
+# 🚌 Electric Bus and Transit Module in MATSim ⚡
 
-This repository contains the implementation and contribution of an Electric Bus and Transit Module for MATSim (Multi-Agent Transport Simulation), a widely used open-source framework for simulating large-scale transportation systems. The module integrates electric buses into the MATSim ecosystem, enabling the simulation of electric public transit systems, including charging infrastructure, energy consumption, and scheduling.
+This repository contains an **Electric Bus and Transit Module** for **MATSim** (Multi-Agent Transport Simulation), a widely used open-source framework for simulating large-scale transportation systems. This module integrates electric buses into the MATSim ecosystem, enabling the simulation of electric public transit systems—charging infrastructure, energy consumption, and scheduling included.
 
-Table of Contents
-Introduction
+---
 
-Features
+## 📑 Table of Contents
 
-Installation
+- [Introduction](#introduction)
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [License](#license)
+- [Acknowledgements](#acknowledgements)
 
-Usage
+---
 
-Contributing
+## 📌 Introduction
 
-License
+This project extends MATSim's capabilities to support electric bus simulation within public transit networks, including:
 
-Acknowledgements
+- ⚡ **Electric bus energy consumption**
+- 🏙️ **Charging infrastructure placement and scheduling**
+- 🕒 **Operational impact on transit systems and the energy grid**
 
-Introduction
+It is particularly useful for **researchers**, **urban planners**, and **policymakers** exploring sustainable public transport solutions.
 
-This project aims to extend MATSim's capabilities to support the simulation of electric buses and their integration into public transit networks. This includes modelling:
+---
 
-1. Electric bus energy consumption.
+## 🚀 Features
 
-2. Charging infrastructure placement and scheduling.
+- **Electric Bus Energy Consumption Model**  
+  Simulates energy use based on route, traffic, and vehicle parameters.
 
-3. Impact of electric buses on transit operations and energy grids.
+- **Charging Infrastructure Support**  
+  Models charging stations at depots, hubs, and on-route points.
 
-This module is handy for researchers, urban planners, and policymakers interested in evaluating the feasibility and impact of transitioning to electric public transit systems.
+- **Charging Scheduling**  
+  Minimises downtime and ensures bus availability through optimised scheduling.
 
-Features
-Electric Bus Energy Consumption Model: Simulates the energy consumption of electric buses based on route characteristics, traffic conditions, and vehicle specifications.
+- **Full Integration with MATSim Transit**  
+  Works seamlessly with existing MATSim transit features.
 
-Charging Infrastructure: Supports the placement and operation of charging stations at transit hubs, depots, and along routes.
+- **Scenario Analysis Tools**  
+  Evaluate fleet configurations, battery capacities, and charging setups.
 
-Charging Scheduling: Optimizes charging schedules to minimize downtime and ensure bus availability.
+---
 
-Integration with MATSim Transit: Seamlessly integrates with MATSim's existing transit simulation capabilities.
+## 🔧 Installation
 
-Scenario Analysis: Enables comparison of different electric bus deployment strategies, such as battery size, charging locations, and fleet composition.
+To install and build the module:
 
-Installation
-To use this module, follow these steps:
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/prvnpandey/EvTransitMatsim.git
+   cd EvTransitMatsim
+   ```
 
-Clone the Repository:
+2. **Install dependencies**:  
+   Make sure [MATSim](https://www.matsim.org/) is installed.
 
-bash
-Copy
-git clone https://github.com/prvnpandey/EvTransitMatsim.git
-cd EvTransitMatsim
-Install Dependencies:
-Ensure you have MATSim installed. You can download MATSim from the official website.
+3. **Build with Maven**:
+   ```bash
+   mvn clean install
+   ```
 
-Build the Module:
-Use Maven to build the project:
+4. **Run simulations**:  
+   Use example config files in `src/main/resources`.
 
-bash
-Copy
-mvn clean install
-Run Simulations:
-Use the provided configuration files to run simulations. Example configurations are located in the src/main/resources directory.
+---
 
-Usage
-To simulate with the Electric Bus and Transit Module:
+## ▶️ Usage
 
-Prepare Input Data:
+To simulate electric bus transit:
 
-Transit schedule (in MATSim format).
+### 1. Prepare Input Data
 
-Electric bus specifications (e.g., battery capacity, energy consumption rates).
+- Transit schedule (MATSim format)
+- Electric bus specs (e.g., battery capacity, consumption rates)
+- Charging station locations/specs
 
-Charging station locations and specifications.
+### 2. Configure the Simulation
 
-Configure Simulation:
-Modify the config.xml file to include the electric bus and charging parameters. Example:
+Update your `config.xml` with electric bus settings:
 
-XML
-Copy
+```xml
 <module name="electric bus">
     <param name="batteryCapacity" value="300" /> <!-- in kWh -->
     <param name="charging power" value="150" /> <!-- in kW -->
     <param name="chargingStationsFile" value="path/to/charging/stations.xml" />
 </module>
-Run HTML
-Run the Simulation:
-Execute the simulation using the MATSim command-line interface:
+```
 
-bash
-Copy
+### 3. Run the Simulation
+
+```bash
 java -cp matsim-electric-bus.jar org.matsim.run.Controller config.xml
-Analyze Results:
-Output files will include energy consumption statistics, charging logs, and transit performance metrics.
+```
 
-Contributing
-We welcome contributions to this project! If you'd like to contribute, please follow these steps:
+### 4. Analyse Results
 
-Fork the repository.
+Results include:
 
-Create a new branch for your feature or bugfix:
+- 📊 Energy consumption reports  
+- ⚡ Charging logs  
+- 🚏 Transit performance metrics
 
-bash
-Copy
-git checkout -b feature/your-feature-name
-Commit your changes:
+---
 
-bash
-Copy
-git commit -m "Add your commit message here"
-Push your branch:
+## 🤝 Contributing
 
-bash
-Copy
-git push origin feature/your-feature-name
-Open a pull request on GitHub.
+We welcome contributions! To get started:
 
-Please ensure your code follows the project's coding standards and includes appropriate documentation.
+1. **Fork the repository**
+2. **Create a branch**:
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+3. **Commit changes**:
+   ```bash
+   git commit -m "Add your commit message here"
+   ```
+4. **Push to your fork**:
+   ```bash
+   git push origin feature/your-feature-name
+   ```
+5. **Open a Pull Request** on GitHub
 
-License
+Please follow the coding standards and include documentation with your contributions.
 
-This project is licensed under the GNU General Public License v3.0. See the LICENSE file for details.
+---
 
-Acknowledgments
+## 📄 License
 
-The MATSim community provides a robust and extensible simulation framework.
+Licensed under the **GNU General Public License v3.0**.  
+See the [LICENSE](./LICENSE) file for details.
 
-Contributors to this project for their valuable input and efforts.
+---
 
-For questions or feedback, please open an issue or contact the maintainers.
+## 🙏 Acknowledgements
 
-Happy simulating! 🚌⚡
+- The **MATSim community** for providing a robust simulation platform.
+- All **contributors** for their valuable input and efforts.
+
+---
+
+For questions or suggestions, feel free to **open an issue** or contact the maintainers. Happy simulating! 🚌⚡

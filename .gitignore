@@ -25,6 +25,10 @@ hs_err_pid*
 /.idea/
 *.iml
 
+#python
+__pycache__/
+
 # Specific files to ignore
+output_network.xml
 links.dbf
 output_events.xml

@@ -1,14 +1,22 @@
+import gzip
 import xml.etree.ElementTree as ET
 from collections import defaultdict
 from dbfread import DBF
 import matplotlib.pyplot as plt
+import pandas as pd
 from speed_access import *
-
+from networkxml import network_to_csv
 xml_filename = 'python/output_events.xml'        # path to your MATSim events XML file
 dbf_filename = 'python/links.dbf'         # path to your links DBF file
+gzipped_xml_path = "python/network/output_network.xml.gz"
 
-# Load link lengths.
-link_lengths, freespeeds = load_link(dbf_filename)
+# Extract the compressed XML network file and get it in a df.
+with gzip.open(gzipped_xml_path, "rt", encoding="utf-8") as f:
+    network_df = network_to_csv(f)
+
+# Extract link lengths and freespeeds into dict.
+link_lengths = network_df.set_index('link_id')['length'].to_dict()
+freespeeds = network_df.set_index('link_id')['freespeed'].to_dict()
 print('Link loaded')
 
 # Parse events.

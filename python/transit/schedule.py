@@ -1,5 +1,7 @@
 """contains functions that manipulate transitSchedule.xml"""
 
+import pandas as pd
+
 
 def get_bus_ids(schedule, line):
     """
@@ -30,7 +32,42 @@ def get_bus_ids(schedule, line):
                             .find("departure")
                             .get("vehicleRefId")
                         )
-                if len(veh_id)>=2:
+                if len(veh_id) >= 2:
                     break
             break
     return veh_id
+
+
+def parse_transit_departures(departures: pd.DataFrame, line_filter=None):  # WIP input
+    """
+    reads transit departures files and outputs the shapes and lines to be used for busid
+
+    input:
+        transit departure file.
+        optional: list containing line_ids to filter. Any line IDs not in list will be
+        dropped.
+    output:
+        line_dict - line_id:(route_shape_id1, route_shapeid2).
+    """
+    # Parse departure file, for each line_id extract the shape_id with the most
+    # departure times for inbound and outbound.
+    # Create set containing shape_ids, assign set to dict with key= line_id.
+    line_dict = {}
+    if line_filter:
+        lines = line_filter
+    else:
+        lines = departures["Line ID"].unique().tolist
+    for line in lines:
+        line_departures = departures.loc[departures["Line ID"] == line].copy()
+        line_departures["Departure List"] = line_departures[
+            "Unique Departure Times (HH:mm)"
+        ].apply(
+            lambda x: [time.strip() for time in x.split(",")] if pd.notna(x) else []
+        )
+        line_departures['Num Departures'] = line_departures['Departure List'].apply(len)
+        outbound_df = line_departures[line_departures['Direction'] == 'Outbound']
+        inbound_df = line_departures[line_departures['Direction'] == 'Inbound']
+        outbound_shape_id = outbound_df.loc[outbound_df['Num Departures'].idxmax(), 'Shape ID']
+        inbound_shape_id = inbound_df.loc[inbound_df['Num Departures'].idxmax(), 'Shape ID']
+        line_dict[line] = (inbound_shape_id, outbound_shape_id)
+    return line_dict

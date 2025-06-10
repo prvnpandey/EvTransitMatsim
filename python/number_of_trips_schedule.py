@@ -22,10 +22,11 @@ def convert_schedule_to_hhmm(schedule):
     }
 
 # === LOAD DATA ===
-file_path = "transit_departures.xlsx"  # adjust path as needed
+file_path = "python/transit_departures.xlsx"  # adjust path as needed
 df = pd.read_excel(file_path)
 
 shape_dict = parse_transit_departures(df)
+
 
 # === ORGANISE DEPARTURES PER ROUTE ===
 line_trips = defaultdict(list)

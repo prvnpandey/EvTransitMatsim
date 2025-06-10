@@ -53,10 +53,11 @@ def parse_transit_departures(departures: pd.DataFrame, line_filter=None):  # WIP
     # departure times for inbound and outbound.
     # Create set containing shape_ids, assign set to dict with key= line_id.
     line_dict = {}
+    departures = departures[departures['Direction'] != 'Unknown']
     if line_filter:
         lines = line_filter
     else:
-        lines = departures["Line ID"].unique().tolist
+        lines = departures["Line ID"].unique().tolist()
     for line in lines:
         line_departures = departures.loc[departures["Line ID"] == line].copy()
         line_departures["Departure List"] = line_departures[
@@ -67,6 +68,8 @@ def parse_transit_departures(departures: pd.DataFrame, line_filter=None):  # WIP
         line_departures['Num Departures'] = line_departures['Departure List'].apply(len)
         outbound_df = line_departures[line_departures['Direction'] == 'Outbound']
         inbound_df = line_departures[line_departures['Direction'] == 'Inbound']
+        if outbound_df.empty or inbound_df.empty:
+            break
         outbound_shape_id = outbound_df.loc[outbound_df['Num Departures'].idxmax(), 'Shape ID']
         inbound_shape_id = inbound_df.loc[inbound_df['Num Departures'].idxmax(), 'Shape ID']
         line_dict[line] = (inbound_shape_id, outbound_shape_id)

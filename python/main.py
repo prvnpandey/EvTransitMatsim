@@ -40,7 +40,4 @@ for line in busline_list:
         break
 # Compute speeds.
 
-
-
-
 analysis(speed_results, freespeeds)

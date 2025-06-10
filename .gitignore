@@ -32,3 +32,5 @@ __pycache__/
 output_network.xml
 links.dbf
 output_events.xml
+test.ipynb
+.DS_Store

@@ -5,7 +5,11 @@ import xml.etree.ElementTree as ET
 import pandas as pd
 from speed_access import parse_events, compute_speeds, compute_travel_time
 from xmldf import network_to_df
-from transit.schedule import get_bus_ids, parse_transit_departures
+from transit.schedule import (
+    get_bus_ids,
+    parse_transit_departures,
+    parse_departure_travel_time,
+)
 
 gzip_event_xml_path = "python/output_events.xml.gz"
 gzip_network_xml_path = "python/network/output_network.xml.gz"
@@ -35,9 +39,26 @@ busline_list = ["1"]
 
 inbound_travel_time = {}
 outbound_travel_time = {}
-dep_df["Travel Time"] = None
+dep_df["Travel Time (min)"] = None
+
 with gzip.open(gzip_schedule_xml_path, "rt", encoding="utf-8") as f:
     schedule_tree = ET.parse(f)
+for line, shapes in departure_shape_dict.items():
+    inbound_travel_time, outbound_travel_time = parse_departure_travel_time(
+        schedule_tree, line, shapes
+    )
+    dep_df.loc[dep_df["Shape ID"] == shapes[0], "Travel Time (min)"] = (
+        f"{inbound_travel_time}"
+    )
+    dep_df.loc[dep_df["Shape ID"] == shapes[1], "Travel Time (min)"] = (
+        f"{outbound_travel_time}"
+    )
+# Compute speeds.
+
+dep_df.to_csv("python/transit_departure_with_travel_time.csv")
+print("saved departure ")
+
+"""
 for line, shapes in departure_shape_dict.items():
     inbound_ids, outbound_ids = get_bus_ids(schedule_tree, line, shapes)
     for time, bus in inbound_ids.items():
@@ -58,6 +79,4 @@ for line, shapes in departure_shape_dict.items():
     dep_df.loc[dep_df["Shape ID"] == shapes[1], "Travel Time"] = (
         f"{outbound_travel_time}"
     )
-# Compute speeds.
-
-dep_df.to_csv("test/travel_time_test.csv")
+"""

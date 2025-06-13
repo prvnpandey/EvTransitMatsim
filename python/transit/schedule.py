@@ -1,6 +1,12 @@
 """contains functions that manipulate transitSchedule.xml"""
 
 import pandas as pd
+from datetime import timedelta
+
+
+def to_timedelta(time_str):
+    h, m, s = map(int, time_str.split(":"))
+    return timedelta(hours=h, minutes=m, seconds=s)
 
 
 def get_bus_ids(schedule, line, shape):
@@ -25,14 +31,20 @@ def get_bus_ids(schedule, line, shape):
             # Iterate over transit routes to get 2 routes in different directions.
             for transitRoute in transit_line.findall("transitRoute"):
                 # Current theory is routeIDs ending in '20233010multint' are valid
-                if transitRoute.find("description").text[8:] == shape[0]:
+                if transitRoute.find("description").text[8:] == shape[
+                    0
+                ] and "20233010multint" in transitRoute.get("id"):
+
                     for departure in transitRoute.find("departures").findall(
                         "departure"
                     ):
                         veh_id = departure.get("vehicleRefId")
                         veh_time = departure.get("departureTime")
                         inbound_dict[veh_time] = veh_id
-                elif transitRoute.find("description").text[8:] == shape[1]:
+                elif transitRoute.find("description").text[8:] == shape[
+                    1
+                ] and "20233010multint" in transitRoute.get("id"):
+
                     for departure in transitRoute.find("departures").findall(
                         "departure"
                     ):
@@ -40,7 +52,9 @@ def get_bus_ids(schedule, line, shape):
                         veh_time = departure.get("departureTime")
                         outbound_dict[veh_time] = veh_id
             break
-    return (inbound_dict, outbound_dict)
+    sorted_inbound = dict(sorted(inbound_dict.items()))
+    sorted_outbound = dict(sorted(outbound_dict.items()))
+    return (sorted_inbound, sorted_outbound)
 
 
 def parse_transit_departures(departures: pd.DataFrame, line_filter=None):  # WIP input
@@ -72,7 +86,7 @@ def parse_transit_departures(departures: pd.DataFrame, line_filter=None):  # WIP
         outbound_df = line_departures[line_departures["Direction"] == "Outbound"]
         inbound_df = line_departures[line_departures["Direction"] == "Inbound"]
         if outbound_df.empty or inbound_df.empty:
-            break
+            continue
         outbound_shape_id = outbound_df.loc[
             outbound_df["Num Departures"].idxmax(), "Shape ID"
         ]
@@ -81,3 +95,51 @@ def parse_transit_departures(departures: pd.DataFrame, line_filter=None):  # WIP
         ]
         line_dict[line] = (inbound_shape_id, outbound_shape_id)
     return line_dict
+
+
+def parse_departure_travel_time(schedule, line, shape):
+    """
+    Outputs the travel time for each departure in a line based on
+    last stop arrival offset.
+    """
+    root = schedule.getroot()
+    # Finds correct transit line element.
+    inbound_dict = {}
+    outbound_dict = {}
+    for transit_line in root.findall(".//transitLine"):
+        line_name = transit_line.get("id")
+        if line_name == line:
+            # Iterate over transit routes to get 2 routes in different directions.
+            for transitRoute in transit_line.findall("transitRoute"):
+                # Current theory is routeIDs ending in '20233010multint' are valid
+                if transitRoute.find("description").text[8:] == shape[
+                    0
+                ] and "20233010multint" in transitRoute.get("id"):
+                    travel_time_list = []
+                    for stop in transitRoute.find("routeProfile").findall("stop"):
+                        arrival_str = stop.get("arrivalOffset")
+                        travel_time_list.append(to_timedelta(arrival_str))
+                    travel_time = max(travel_time_list)
+                    for departure in transitRoute.find("departures").findall(
+                        "departure"
+                    ):
+                        veh_time = departure.get("departureTime")
+                        inbound_dict[veh_time] = travel_time.total_seconds() / 60
+
+                elif transitRoute.find("description").text[8:] == shape[
+                    1
+                ] and "20233010multint" in transitRoute.get("id"):
+                    travel_time_list = []
+                    for stop in transitRoute.find("routeProfile").findall("stop"):
+                        arrival_str = stop.get("arrivalOffset")
+                        travel_time_list.append(to_timedelta(arrival_str))
+                    travel_time = max(travel_time_list)
+                    for departure in transitRoute.find("departures").findall(
+                        "departure"
+                    ):
+                        veh_time = departure.get("departureTime")
+                        outbound_dict[veh_time] = travel_time.total_seconds() / 60
+            break
+    sorted_inbound = dict(sorted(inbound_dict.items()))
+    sorted_outbound = dict(sorted(outbound_dict.items()))
+    return (sorted_inbound, sorted_outbound)

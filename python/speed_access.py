@@ -199,3 +199,35 @@ def plot_speeds(results, vehicle_id, start_time=None, end_time=None):
     plt.legend()
     plt.grid(True)
     plt.show()
+
+def route_distances(line, shape_id, schedule, network):
+    """
+    Takes the transit schedule and determines the distance of a route 
+    based on the length of the links included.
+    parameters:
+        line: line id of the desired route.
+        shape_id: shape id of the route to calculate, will take the 
+            first appearance of that shape_id.
+        schedule: xml tree of the transitSchedule file.
+        network (DataFrame): Used to determine length based on the links
+            in the route.
+
+    output:
+        distance (float)
+    """
+    root = schedule.getroot()
+    # Finds correct transit line element.
+    length = 0.0
+    for transit_line in root.findall(".//transitLine"):
+        line_name = transit_line.get("id")
+        if line_name == line:
+            # Iterate over transit routes to get 2 routes in different directions.
+            for transitRoute in transit_line.findall("transitRoute"):
+                # Current theory is routeIDs ending in '20233010multint' are valid
+                if transitRoute.find("description").text[8:] == shape_id:
+                    route = transitRoute.find('route')
+                    for link in route.findall('link'):
+                        ref_id = link.get('refId')
+                        length += float(network.loc[ref_id]['length'])
+                    break
+    return (length)

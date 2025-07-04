@@ -1,13 +1,8 @@
 import pandas as pd
-from datetime import datetime, timedelta
-import heapq
 import pyomo.environ as pyo
 from pyomo.opt import SolverFactory
-import numpy as np
 import pprint
-from trips_routes_functions import *
 import matplotlib.pyplot as plt
-
 import pyomo.environ as pyo
 
 def optimization(
@@ -46,10 +41,10 @@ def optimization(
     m.C_bat   = pyo.Param(m.K, initialize=lambda _, k: C_bat[k-1])
 
     m.ch_eff  = pyo.Param(initialize=0.90)       # charging efficiency
-    m.E_0     = pyo.Param(initialize=0.20)       # initial SOC (p.u.)
+    m.E_0     = pyo.Param(initialize=1.00)       # initial SOC (p.u.)
     m.E_min   = pyo.Param(initialize=0.20)       # min SOC (p.u.)
     m.E_max   = pyo.Param(initialize=1.00)       # max SOC (p.u.)
-    m.E_end   = pyo.Param(initialize=0.20)       # end SOC (p.u.)
+    m.E_end   = pyo.Param(initialize=0.9)       # end SOC (p.u.)
     m.delta_t = pyo.Param(initialize=delta_t)
     
     print('Parameters initialized')
@@ -89,6 +84,12 @@ def optimization(
     for i in m.I:
         for t in range(m.T_start[i], m.T_end[i]):
             cons.add(sum(m.b[k, i, t] for k in m.K) == 1)
+            
+        for t in range(1,m.T_start[i]):
+            cons.add(sum(m.b[k,i,t] for k in m.K) == 0)
+
+        for t in range(m.T_end[i],T+1):
+            cons.add(sum(m.b[k,i,t] for k in m.K) == 0)
 
     # 6.4 continuity of assignment: once a bus starts trip i it stays on it
     for i in m.I:
@@ -180,34 +181,16 @@ def plot_energy_and_power(model):
     plt.ylabel('Power (kW)')
     plt.show()
     
-'''
-#######################
-#######################
-#######################
-#######################
-#######################
-#######################
-OPTMIZATION STARTS HERE
-#######################
-#######################
-#######################
-#######################
-#######################
-#######################
-'''
-
-
+# Main execution starts here
+# Load the trips data
 df = pd.read_excel('python/trips_15_min.xlsx')
 target_lines = ["1-803"] # Example: "1-803", "1-807", "1-800", "1-801", "1-802", "1-804"
 df = df[df["Line ID"].isin(target_lines)].copy()
-
 data = pd.read_excel('python/input.xlsx', sheet_name=None)
 
-P = data['Energy Price']['Buy'].to_list()
-
+# ── 1. data preparation ────────────────────────────────────────────────
 bus_counts     = [11] # 249 buses, each with 350 kWh battery
 battery_sizes  = [350]
-
 charger_counts = [5] # 50 chargers, each with 150 kW
 charger_powers = [150]
 
@@ -216,20 +199,20 @@ C_bat, alpha = build_fleet_and_chargers(
     charger_counts, charger_powers
 )
 
+# ── 2. extract data sets ───────────────────────────────────────────────
+# Extract the necessary data from the DataFrame
+energy_price = data['Energy Price']['Buy'].to_list()
 start = df['Start Step'].astype(int).to_list()
 end   = df['End Step'].astype(int).to_list()
-
-# use the exact column name present in the Excel file:
 speed_col = 'Average Speed (km/h)' if 'Average Speed (km/h)' in df.columns else 'Average Speed'
 speed = df[speed_col].astype(float).round(2).to_list()
 
-model = optimization(start, end, alpha, speed, C_bat, P)
+# ── 3. optimization model ────────────────────────────────────────────────
+# Run the optimization model
+model = optimization(start, end, alpha, speed, C_bat, energy_price)
+SolverFactory('gurobi').solve(model, tee=True, options={'TimeLimit': 60, 'MIPGAP': 0.01})
 
-
-# 7. Solve the model
-SolverFactory('gurobi').solve(model, tee=True, options={'TimeLimit': 60, 'MIPGAP': 0.1})
-
-
-# 8. Print the results
+# ── 4. post-processing ─────────────────────────────────────────────────────
+# Print the results
 pprint.pprint(pyo.value(model.obj))
 plot_energy_and_power(model)

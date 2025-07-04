@@ -32,6 +32,7 @@ __pycache__/
 output_network.xml
 links.dbf
 output_events.xml
+output_events.xml.gz
 test.ipynb
 test2.ipynb
 

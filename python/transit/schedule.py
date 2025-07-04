@@ -97,10 +97,10 @@ def parse_transit_departures(departures: pd.DataFrame, line_filter=None):  # WIP
     return line_dict
 
 
-def parse_departure_travel_time(schedule, line, shape):
+def parse_scheduled_travel_time(schedule, line, shape):
     """
-    Outputs the travel time for each departure in a line based on
-    last stop arrival offset.
+    Outputs the scheduled travel time for each departure in a line based
+    on last stop arrival offset.
     """
     root = schedule.getroot()
     # Finds correct transit line element.

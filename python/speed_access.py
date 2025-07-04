@@ -78,22 +78,34 @@ def compute_speeds(events_df, network, id_filter: str, v_s=1):
                         if speed > 0:
                             if speed >= freespeed:
                                 # Entire length is traveled at freespeed
-                                link_statistics[link]['freespeed_distance'] += length
-                                link_statistics[link]['freespeed_time'] += travel_time
+                                link_statistics[link]["freespeed_distance"] += length
+                                link_statistics[link]["freespeed_time"] += travel_time
                             elif freespeed > v_s:
                                 # Calculate stop-and-go distance using the provided formula
-                                stop_and_go_distance = (length * v_s * (freespeed - speed)) / (speed * (freespeed - v_s))
+                                stop_and_go_distance = (
+                                    length * v_s * (freespeed - speed)
+                                ) / (speed * (freespeed - v_s))
                                 stop_and_go_time = stop_and_go_distance / v_s
-                                freespeed_time = travel_time - stop_and_go_time ### !!!!
-                                link_statistics[link]['stop_and_go_distance'] += stop_and_go_distance
-                                link_statistics[link]['stop_and_go_time'] += stop_and_go_time
+                                freespeed_time = (
+                                    travel_time - stop_and_go_time
+                                )  ### !!!!
+                                link_statistics[link][
+                                    "stop_and_go_distance"
+                                ] += stop_and_go_distance
+                                link_statistics[link][
+                                    "stop_and_go_time"
+                                ] += stop_and_go_time
                                 # Remaining distance and time are considered as freespeed
-                                link_statistics[link]['freespeed_distance'] += (length - stop_and_go_distance)
-                                link_statistics[link]['freespeed_time'] += freespeed_time
+                                link_statistics[link]["freespeed_distance"] += (
+                                    length - stop_and_go_distance
+                                )
+                                link_statistics[link][
+                                    "freespeed_time"
+                                ] += freespeed_time
                             else:
                                 # If freespeed <= v_s, consider the entire length as stop-and-go
-                                link_statistics[link]['stop_and_go_distance'] += length
-                                link_statistics[link]['stop_and_go_time'] += travel_time
+                                link_statistics[link]["stop_and_go_distance"] += length
+                                link_statistics[link]["stop_and_go_time"] += travel_time
 
                         # Append detailed record to results.
                         results.append(

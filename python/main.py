@@ -4,7 +4,7 @@ import gzip
 import xml.etree.ElementTree as ET
 
 import pandas as pd
-import line_profiler
+
 
 from speed_access import (
     parse_events,
@@ -19,7 +19,6 @@ from transit.schedule import (
     parse_scheduled_travel_time,
 )
 from energy import calculate_energy_consumption
-
 
 
 gzip_event_xml_path = "python/output_events.xml.gz"
@@ -38,7 +37,9 @@ print("Link loaded")
 # Parse events.
 csv_events = False
 if csv_events:
-    events = pd.read_csv('python/output_events.csv', dtype={'link':str, 'actType':str})
+    events = pd.read_csv(
+        "python/output_events.csv", dtype={"link": str, "actType": str}
+    )
     print("Events loaded")
 else:
     with gzip.open(gzip_event_xml_path, "rt", encoding="utf-8") as f:
@@ -52,14 +53,14 @@ dep_df = pd.read_csv(departure_path)
 departure_shape_dict = parse_transit_departures(dep_df)
 
 travel_time_output_cols = {
-    "Line ID": pd.Series(dtype='str'),
-    "Shape ID": pd.Series(dtype='str'),
-    "Departure Time": pd.Series(dtype='str'),
-    "Vehicle ID": pd.Series(dtype='str'),
-    "Scheduled Travel Time (min)": pd.Series(dtype='float'),
-    "Travel Time (min)": pd.Series(dtype='float'),
-    "Distance (m)": pd.Series(dtype='float'),
-    "Energy Consumption (KJ)": pd.Series(dtype='float'),
+    "Line ID": pd.Series(dtype="str"),
+    "Shape ID": pd.Series(dtype="str"),
+    "Departure Time": pd.Series(dtype="str"),
+    "Vehicle ID": pd.Series(dtype="str"),
+    "Scheduled Travel Time (min)": pd.Series(dtype="float"),
+    "Travel Time (min)": pd.Series(dtype="float"),
+    "Distance (m)": pd.Series(dtype="float"),
+    "Energy Consumption (KJ)": pd.Series(dtype="float"),
 }
 
 TT_output_df = pd.DataFrame(travel_time_output_cols)
@@ -70,8 +71,6 @@ with gzip.open(gzip_schedule_xml_path, "rt", encoding="utf-8") as f:
     schedule_tree = ET.parse(f)
 
 
-#@profile
-#def loop(TT_output_df):
 try:
     total_lines = len(departure_shape_dict)
     completed_lines = 0
@@ -83,7 +82,9 @@ try:
         for i, shape in enumerate(shapes):
             distance = route_distances(line, shape, schedule_tree, network_df)
             for time, bus in bus_id_tuple[i].items():
-                speed_results = compute_speeds(events, network_df, id_filter=bus, v_s=1.0)
+                speed_results = compute_speeds(
+                    events, network_df, id_filter=bus, v_s=1.0
+                )
                 if speed_results.empty:
                     travel_time_tuple[i][time] = "no_events"
                     energy_consumption = 0
@@ -104,9 +105,8 @@ try:
                 TT_output_df = pd.concat(
                     [TT_output_df, pd.DataFrame([output_row])], ignore_index=True
                 )
-        completed_lines +=1
+        completed_lines += 1
         print(f"{(completed_lines/total_lines)*100:.2f}% of lines completed")
-
 
 
 except KeyboardInterrupt:
@@ -115,7 +115,6 @@ except KeyboardInterrupt:
     raise
 
 
-#loop(TT_output_df)
 # Compute speeds.
 
 TT_output_df.to_csv("python/transit_departure_new_format.csv")

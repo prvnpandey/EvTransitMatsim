@@ -21,9 +21,9 @@ from transit.schedule import (
 from energy import calculate_energy_consumption
 
 
-gzip_event_xml_path = "python/output_events.xml.gz"
-gzip_network_xml_path = "python/network/output_network.xml.gz"
-gzip_schedule_xml_path = "python/transit/output_TransitSchedule.xml.gz"
+gzip_event_xml_path = "python/xml/output_events.xml.gz"
+gzip_network_xml_path = "python/xml/output_network.xml.gz"
+gzip_schedule_xml_path = "python/xml/output_transitSchedule.xml.gz"
 
 # Extract the compressed XML network file and get it in a df.
 with gzip.open(gzip_network_xml_path, "rt", encoding="utf-8") as f:
@@ -60,7 +60,7 @@ travel_time_output_cols = {
     "Scheduled Travel Time (min)": pd.Series(dtype="float"),
     "Travel Time (min)": pd.Series(dtype="float"),
     "Distance (m)": pd.Series(dtype="float"),
-    "Energy Consumption (KJ)": pd.Series(dtype="float"),
+    "Energy Consumption (kWh)": pd.Series(dtype="float"),
 }
 
 TT_output_df = pd.DataFrame(travel_time_output_cols)
@@ -85,6 +85,7 @@ try:
                 speed_results = compute_speeds(
                     events, network_df, id_filter=bus, v_s=1.0
                 )
+                print('The speed dataframe is:', speed_results)
                 if speed_results.empty:
                     travel_time_tuple[i][time] = "no_events"
                     energy_consumption = 0
@@ -105,17 +106,18 @@ try:
                 TT_output_df = pd.concat(
                     [TT_output_df, pd.DataFrame([output_row])], ignore_index=True
                 )
+                print(output_row)
         completed_lines += 1
         print(f"{(completed_lines/total_lines)*100:.2f}% of lines completed")
 
 
 except KeyboardInterrupt:
-    TT_output_df.to_csv("python/transit_departure_new_format.csv")
+    TT_output_df.to_csv("python/transit_departure_updated_energy.csv")
     print("saved partial departures ")
     raise
 
 
 # Compute speeds.
 
-TT_output_df.to_csv("python/transit_departure_new_format.csv")
+TT_output_df.to_csv("python/transit_departure_updated_energy.csv")
 print("saved departure ")

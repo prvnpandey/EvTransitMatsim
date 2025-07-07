@@ -10,7 +10,7 @@ from speed_access import (
     parse_events,
     compute_speeds,
     compute_travel_time,
-    route_distances,
+    route_distances
 )
 from xmldf import network_to_df
 from transit.schedule import (
@@ -119,9 +119,7 @@ except KeyboardInterrupt:
 
 # Compute speeds.
 
-<<<<<<< Updated upstream
 TT_output_df.to_csv("python/transit_departure_updated_energy.csv")
 print("saved departure ")
-=======
-analysis(speed_results, freespeeds)
->>>>>>> Stashed changes
+
+#analysis(speed_results, freespeeds)

@@ -119,5 +119,9 @@ except KeyboardInterrupt:
 
 # Compute speeds.
 
+<<<<<<< Updated upstream
 TT_output_df.to_csv("python/transit_departure_updated_energy.csv")
 print("saved departure ")
+=======
+analysis(speed_results, freespeeds)
+>>>>>>> Stashed changes

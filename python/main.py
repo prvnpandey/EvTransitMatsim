@@ -2,7 +2,6 @@
 
 import gzip
 import xml.etree.ElementTree as ET
-
 import pandas as pd
 
 
@@ -20,6 +19,7 @@ from transit.schedule import (
 )
 from energy import calculate_energy_consumption
 
+from analyze_results import analysis
 
 gzip_event_xml_path = "python/xml/output_events.xml.gz"
 gzip_network_xml_path = "python/xml/output_network.xml.gz"
@@ -85,14 +85,13 @@ try:
                 speed_results = compute_speeds(
                     events, network_df, id_filter=bus, v_s=1.0
                 )
-                print('The speed dataframe is:', speed_results)
                 if speed_results.empty:
                     travel_time_tuple[i][time] = "no_events"
                     energy_consumption = 0
                 else:
                     travel_time_tuple[i][time] = compute_travel_time(speed_results)
                     energy_consumption = calculate_energy_consumption(speed_results)
-
+            
                 output_row = {
                     "Line ID": line,
                     "Shape ID": shape,
@@ -101,12 +100,11 @@ try:
                     "Scheduled Travel Time (min)": schedule_time_tuple[i][time],
                     "Travel Time (min)": travel_time_tuple[i][time],
                     "Distance (m)": distance,
-                    "Energy Consumption (KJ)": energy_consumption,
+                    "Energy Consumption (kWh)": energy_consumption,
                 }
                 TT_output_df = pd.concat(
                     [TT_output_df, pd.DataFrame([output_row])], ignore_index=True
                 )
-                print(output_row)
         completed_lines += 1
         print(f"{(completed_lines/total_lines)*100:.2f}% of lines completed")
 

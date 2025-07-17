@@ -1,7 +1,7 @@
 from speed_access import plot_speeds
 
 def analysis(speed_results, freespeeds):
-    
+
 # Print all results.
     for rec in speed_results[:10]:  # Print first 10 records for brevity
         free_speed = freespeeds.get(rec['link'], None)

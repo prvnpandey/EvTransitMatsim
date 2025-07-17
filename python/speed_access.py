@@ -151,32 +151,32 @@ def compute_travel_time(df):
     return float(fin_time - ini_time) / 60
 
 
-def plot_speeds(results, vehicle_id, start_time=None, end_time=None):
+def plot_speeds(results: pd.DataFrame, vehicle_id, start_time=None, end_time=None):
     """Plot speed profile of given vehicle id"""
     # Ensure the vehicle_id is a string (depending on how they are stored)
     vehicle_id = str(vehicle_id)
 
     # Filter the results for the specified vehicle.
-    vehicle_data = [r for r in results if r["vehicle"] == vehicle_id]
 
-    if not vehicle_data:
+    vehicle_data = results[results['vehicle'] == vehicle_id]
+    
+    if vehicle_data.empty:
         print(f"No speed data found for vehicle {vehicle_id}.")
         return
 
     # Sort vehicle data by entry time
-    vehicle_data.sort(key=lambda x: x["entry_time"])
+    vehicle_data.sort_values(by='entry_time', inplace=True)
 
-    # Filter data based on the time window
-    filtered_data = [
-        r
-        for r in vehicle_data
-        if (start_time is None or r["entry_time"] >= start_time)
-        and (end_time is None or r["exit_time"] <= end_time)
-    ]
-
-    if not filtered_data:
-        print(f"No data found for vehicle {vehicle_id} in the specified time range.")
-        return
+    # Filter data based on the time window.
+    if start_time:
+        print(vehicle_data.shape)
+        vehicle_data = vehicle_data[vehicle_data['entry_time'] >= start_time]
+        print(vehicle_data.shape)
+    if end_time:
+        print(vehicle_data.shape)
+        print(vehicle_data['entry_time'].mean())
+        vehicle_data = vehicle_data[vehicle_data['entry_time'] <= end_time]
+        print(vehicle_data.shape)
 
     # Calculate speed for each time interval,
     # keeping the speed constant until the status changes.
@@ -185,21 +185,23 @@ def plot_speeds(results, vehicle_id, start_time=None, end_time=None):
     current_speed = None
     current_time = None
 
-    for r in filtered_data:
-        if current_speed is None or r["speed"] != current_speed:
+    for index, row in vehicle_data.iterrows():
+        if current_speed is None or row["speed"] != current_speed:
             # If speed changes, record the previous speed and time
             if current_speed is not None:
                 times.append(current_time)
                 speeds.append(current_speed)
-            current_speed = r["speed"]
-            current_time = r["entry_time"]
+            current_speed = row["speed"]
+            current_time = row["entry_time"]
         # Extend the time interval for the current speed
-        current_time = r["exit_time"]
+        current_time = row["exit_time"]
 
+
+    ## FIXME
     # Append the last speed and time
-    if current_speed is not None:
-        times.append(current_time)
-        speeds.append(current_speed)
+#    if current_speed is not None:
+#        times.append(current_time)
+#        speeds.append(current_speed)
 
     # Create the plot
     plt.figure(figsize=(10, 6))

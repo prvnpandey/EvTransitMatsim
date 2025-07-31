@@ -47,8 +47,8 @@ plt.scatter(df['Scheduled Travel Time (min)'], df['Travel Time (min)'], alpha=0.
 lims = [min(df['Scheduled Travel Time (min)'].min(), df['Travel Time (min)'].min()),
         max(df['Scheduled Travel Time (min)'].max(), df['Travel Time (min)'].max())]
 plt.plot(lims, lims, 'r--', linewidth=2, label='1:1 Line')
-plt.xlabel('Scheduled Travel Time (min)')
-plt.ylabel('Actual Travel Time (min)')
+plt.xlabel('Timetable (min)')
+plt.ylabel('Simulated Travel Time (min)')
 plt.legend()
 plt.grid(True, linestyle='--', alpha=0.7)
 plt.tight_layout()

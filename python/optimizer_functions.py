@@ -462,8 +462,8 @@ def plot_optimization_results(
         'Fleet costs',
         'Charger costs',
         'Charger implementation costs',
-        'Energy costs (10 yr)',
-        'Power peak costs (10 yr)',
+        'Energy costs',
+        'Power peak costs',
         'TCO'
     ]
     parts = [fleet_capex, charger_capex, implementation_capex, energy_10yr, peak_10yr]
@@ -495,7 +495,7 @@ def plot_optimization_results(
     ax.text(
         text_x, capex_total/2,
         f'CAPEX\n{capex_total:,.0f} CAD$\n({capex_total/tco_total*100:.1f} %)',
-        va='center', ha='right', fontsize=9, fontweight='bold'
+        va='center', ha='right', fontsize=12, fontweight='bold'
     )
 
     # Annotate OPEX segment on TCO bar (centralized, smaller font, thinner bracket)
@@ -509,7 +509,7 @@ def plot_optimization_results(
     ax.text(
         text_x, capex_total + opex_total_10yr/2,
         f'OPEX\n{opex_total_10yr:,.0f} CAD$\n({opex_total_10yr/tco_total*100:.1f} %)',
-        va='center', ha='right', fontsize=9, fontweight='bold'
+        va='center', ha='right', fontsize=12, fontweight='bold'
     )
 
     ax.set_ylabel('Cost (CAD$)', fontsize=12)

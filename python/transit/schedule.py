@@ -33,7 +33,7 @@ def get_bus_ids(schedule, line, shape):
                 # Current theory is routeIDs ending in '20233010multint' are valid
                 if transitRoute.find("description").text[8:] == shape[
                     0
-                ] and "20233010multint" in transitRoute.get("id"):
+                ] and "20250910daily" in transitRoute.get("id"):
 
                     for departure in transitRoute.find("departures").findall(
                         "departure"
@@ -43,7 +43,7 @@ def get_bus_ids(schedule, line, shape):
                         inbound_dict[veh_time] = veh_id
                 elif transitRoute.find("description").text[8:] == shape[
                     1
-                ] and "20233010multint" in transitRoute.get("id"):
+                ] and "20250910daily" in transitRoute.get("id"):
 
                     for departure in transitRoute.find("departures").findall(
                         "departure"
@@ -111,10 +111,10 @@ def parse_scheduled_travel_time(schedule, line, shape):
         if line_name == line:
             # Iterate over transit routes to get 2 routes in different directions.
             for transitRoute in transit_line.findall("transitRoute"):
-                # Current theory is routeIDs ending in '20233010multint' are valid
+                # Current theory is routeIDs ending in '20250910daily' are valid
                 if transitRoute.find("description").text[8:] == shape[
                     0
-                ] and "20233010multint" in transitRoute.get("id"):
+                ] and "20250910daily" in transitRoute.get("id"):
                     travel_time_list = []
                     for stop in transitRoute.find("routeProfile").findall("stop"):
                         arrival_str = stop.get("arrivalOffset")
@@ -128,7 +128,7 @@ def parse_scheduled_travel_time(schedule, line, shape):
 
                 elif transitRoute.find("description").text[8:] == shape[
                     1
-                ] and "20233010multint" in transitRoute.get("id"):
+                ] and "20250910daily" in transitRoute.get("id"):
                     travel_time_list = []
                     for stop in transitRoute.find("routeProfile").findall("stop"):
                         arrival_str = stop.get("arrivalOffset")

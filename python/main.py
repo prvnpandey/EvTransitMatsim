@@ -17,9 +17,21 @@ from transit.schedule import (
     parse_transit_departures,
     parse_scheduled_travel_time,
 )
+from transit.departures import create_transit_departures
 from energy import calculate_energy_consumption
 
 from analyze_results import analysis
+
+# Will get transit departures from output_TransitSchedule.xml.gz instead of 
+# transit_departures.csv
+CREATE_TRANSIT_DEPARTURES = False
+
+# Will overwrite the transit_departures.csv file based on output_TransitSchedule.xml.gz
+SAVE_DEPARTURES_TO_FILE = False
+
+# If output_events.csv is available, skips loading events from xml tree which 
+# speeds up the process.
+LOAD_EVENTS_FROM_CSV = False 
 
 gzip_event_xml_path = "python/xml/output_events.xml.gz"
 gzip_network_xml_path = "python/xml/output_network.xml.gz"
@@ -35,8 +47,7 @@ freespeeds = network_df["freespeed"].to_dict()
 print("Link loaded")
 
 # Parse events.
-csv_events = False
-if csv_events:
+if LOAD_EVENTS_FROM_CSV:
     events = pd.read_csv(
         "python/output_events.csv", dtype={"link": str, "actType": str}
     )
@@ -46,11 +57,19 @@ else:
         events = parse_events(f)
     print("Events loaded")
 
+with gzip.open(gzip_schedule_xml_path, "rt", encoding="utf-8") as f:
+    schedule_tree = ET.parse(f)
+print("Schedule loaded")
 
-# Iterate through the transit schedule.
-departure_path = "python/transit_departures.csv"  # adjust path as needed
-dep_df = pd.read_csv(departure_path)
-departure_shape_dict = parse_transit_departures(dep_df)
+if CREATE_TRANSIT_DEPARTURES:
+    dep_df = create_transit_departures(schedule_tree, save=SAVE_DEPARTURES_TO_FILE)
+else:
+    departure_path = "python/transit_departures.csv"
+
+    dep_df = pd.read_csv(departure_path)
+
+departure_shape_dict = parse_transit_departures(dep_df)    
+
 
 travel_time_output_cols = {
     "Line ID": pd.Series(dtype="str"),
@@ -67,8 +86,7 @@ TT_output_df = pd.DataFrame(travel_time_output_cols)
 
 travel_time_tuple = ({}, {})
 
-with gzip.open(gzip_schedule_xml_path, "rt", encoding="utf-8") as f:
-    schedule_tree = ET.parse(f)
+
 
 
 try:

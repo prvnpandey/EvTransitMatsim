@@ -17,8 +17,9 @@ def optimization(
         E_0:      float = 0.20,       # initial SOC (p.u.)
         E_min:      float = 0.20,       # min SOC (p.u.)
         E_max:      float = 1.00,       # max SOC (p.u.)
-        E_end:      float = 0.20,       # end SOC (p.u
-        delta_t:    float = 0.25        # h (15-min step)
+        E_end:      float = 0.20,       # end SOC (p.u)
+        delta_t:    float = 0.25,      # h (15-min step)
+        relaxed_binary: bool = False   # if True, use continuous [0,1] instead of binary variables
 ):
 
     # ── 1. basic sets ─────────────────────────────────────────────────────────
@@ -52,8 +53,10 @@ def optimization(
     print('Parameters initialized')
     
     # ── 3. decision variables ────────────────────────────────────────────────
-    m.b     = pyo.Var(m.K, m.I, m.T, within=pyo.Binary)   # bus k drives trip i at t
-    m.x     = pyo.Var(m.K, m.N, m.T, within=pyo.Binary)   # bus k charges on charger n
+    # Use either Binary or NonNegativeReals constrained to [0,1] based on relaxed_binary parameter
+    var_domain = pyo.UnitInterval if relaxed_binary else pyo.Binary
+    m.b     = pyo.Var(m.K, m.I, m.T, within=var_domain)   # bus k drives trip i at t
+    m.x     = pyo.Var(m.K, m.N, m.T, within=var_domain)   # bus k charges on charger n
     m.e     = pyo.Var(m.K, m.T,     within=pyo.NonNegativeReals)
     m.w_buy = pyo.Var(m.T,          within=pyo.NonNegativeReals)
 

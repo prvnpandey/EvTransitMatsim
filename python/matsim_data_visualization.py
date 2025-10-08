@@ -59,7 +59,7 @@ plt.figure(figsize=(14, 6))
 sns.boxplot(x='Line ID', y='Avg Energy (kWh/km)', data=df, palette='Set3')
 plt.xlabel('Line ID')
 plt.ylabel('Average Energy Consumption (kWh/km)')
-plt.xticks(rotation=90)
+plt.xticks(rotation=90, ha='right', fontsize=8)
 plt.tight_layout()
 plt.show()
 
@@ -80,7 +80,7 @@ heat_df = df_int.pivot_table(index='Line ID', columns='Interval', aggfunc='size'
 # 1. Count total trips per line
 line_trip_counts = df_int['Line ID'].value_counts()
 # 2. Get the top 10 lines
-top10_lines = line_trip_counts.head(10).index
+top10_lines = line_trip_counts.head(20).index
 # 3. Filter heat_df to only those lines
 heat_df_top10 = heat_df.loc[heat_df.index.isin(top10_lines)]
 

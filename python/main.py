@@ -33,7 +33,7 @@ SAVE_DEPARTURES_TO_FILE = False
 # speeds up the process.
 LOAD_EVENTS_FROM_CSV = False 
 
-gzip_event_xml_path = "python/xml/output_events.xml.gz"
+gzip_event_xml_path = "python/xml/output_events_winter.xml.gz"
 gzip_network_xml_path = "python/xml/output_network.xml.gz"
 gzip_schedule_xml_path = "python/xml/output_transitSchedule.xml.gz"
 
@@ -128,14 +128,14 @@ try:
 
 
 except KeyboardInterrupt:
-    TT_output_df.to_csv("python/transit_departure_updated_energy.csv")
+    TT_output_df.to_csv("python/transit_departure_updated_energy_winter.csv")
     print("saved partial departures ")
     raise
 
 
 # Compute speeds.
 
-TT_output_df.to_csv("python/transit_departure_updated_energy.csv")
+TT_output_df.to_csv("python/transit_departure_updated_energy_winter.csv")
 print("saved departure ")
 
 #analysis(speed_results, freespeeds)

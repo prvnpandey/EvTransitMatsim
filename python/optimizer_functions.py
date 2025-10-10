@@ -50,7 +50,7 @@ def optimization(
     m.E_end   = pyo.Param(initialize=E_end)       # end SOC (p.u.)
     m.delta_t = pyo.Param(initialize=delta_t)
     
-    print('Parameters initialized')
+    #print('Parameters initialized')
     
     # ── 3. decision variables ────────────────────────────────────────────────
     # Use either Binary or NonNegativeReals constrained to [0,1] based on relaxed_binary parameter
@@ -60,7 +60,7 @@ def optimization(
     m.e     = pyo.Var(m.K, m.T,     within=pyo.NonNegativeReals)
     m.w_buy = pyo.Var(m.T,          within=pyo.NonNegativeReals)
 
-    print('Variables initialized')
+    #print('Variables initialized')
     
     # ── 4. objective – minimise energy cost ──────────────────────────────────
     m.obj = pyo.Objective(
@@ -68,7 +68,7 @@ def optimization(
         sense=pyo.minimize
     )
 
-    print('Objective function defined')
+    #print('Objective function defined')
     
     # ── 5. constraints ───────────────────────────────────────────────────────
     cons = m.constraints = pyo.ConstraintList()
@@ -126,7 +126,7 @@ def optimization(
     for k in m.K:
         cons.add(m.e[k, T] >= m.C_bat[k] * m.E_end)
 
-    print('Constraints defined')
+    #print('Constraints defined')
     
     return m
 

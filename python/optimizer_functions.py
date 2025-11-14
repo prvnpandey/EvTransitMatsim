@@ -443,6 +443,49 @@ def plot_optimization_results(
     plt.tight_layout()
     plt.show()
 
+    #combining SOC and Power
+    # Compute average SOC (unchanged)
+    avg_soc = [
+        sum(e[k, t] / C_bat_dict[k] for k in K) / len(K)
+        for t in T
+    ]
+
+    # Compute charging power curve
+    power_curve = [
+        sum(alpha_dict[n] * x[k, n, t] for k in K for n in N)
+        for t in T
+    ]
+    price_curve = [price[t] for t in T]   # not used in this plot now
+
+    # --- Combined figure: SOC + Charging Power ---
+    fig, ax1 = plt.subplots(figsize=(12, 5), dpi=300)
+
+    # ---- Left axis: Average SOC ----
+    ax1.plot(hours, avg_soc, color='#388E3C', linewidth=2, label='Average SOC')
+    ax1.fill_between(hours, avg_soc, color='#388E3C', alpha=0.15)
+
+    ax1.set_xlabel('Hour of day [h]', fontsize=10)
+    ax1.set_ylabel('Average SOC (fraction)', fontsize=10)
+    ax1.set_xlim(0, 24)
+    ax1.set_ylim(0, 1)
+    ax1.set_xticks(range(25))
+    ax1.set_yticks(np.linspace(0, 1, 11))
+    ax1.grid(axis='y', linestyle='--', alpha=0.7)
+
+    # ---- Right axis: Charging Power ----
+    ax2 = ax1.twinx()
+    ax2.plot(hours, power_curve, linestyle='--', linewidth=2,
+            color='tab:blue', label='Charging Power')
+    ax2.set_ylabel('Charging Power [kW]', fontsize=10)
+
+    # ---- Combined legend ----
+    lines = ax1.get_lines() + ax2.get_lines()
+    labels = [l.get_label() for l in lines]
+    ax1.legend(lines, labels, loc='upper right', frameon=True)
+
+    plt.tight_layout()
+    plt.show()
+
     # ── 5. Total cost of ownership ────────────────────────────────────────────
     # Compute CAPEX breakdown
     fleet_capex   = len(K) * vehicle_cost

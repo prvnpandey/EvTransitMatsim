@@ -15,7 +15,7 @@ plt.rcParams.update({
 sns.set_style("whitegrid")
 
 # Load dataset
-df = pd.read_excel('python/optimization_dataset_one.xlsx')
+df = pd.read_excel('python/optimization_dataset.xlsx')
 
 # Parse departure/arrival times
 df['Departure DT'] = pd.to_datetime(df['Departure Time'], format='%H:%M:%S', errors='coerce')
@@ -57,9 +57,15 @@ plt.show()
 # 3. Boxplot of Avg Energy by Line ID
 plt.figure(figsize=(14, 6))
 sns.boxplot(x='Line ID', y='Avg Energy (kWh/km)', data=df, palette='Set3')
+
+# Add mean line
+mean_energy = df['Avg Energy (kWh/km)'].mean()
+plt.axhline(y=mean_energy, color='r', linestyle='--', label=f'Fleet Average: {mean_energy:.2f} kWh/km')
+
 plt.xlabel('Line ID')
 plt.ylabel('Average Energy Consumption (kWh/km)')
 plt.xticks(rotation=90, ha='right', fontsize=8)
+plt.legend()
 plt.tight_layout()
 plt.show()
 

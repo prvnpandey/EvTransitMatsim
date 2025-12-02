@@ -144,3 +144,79 @@ plt.xticks(hours, [h.strftime('%H:00') for h in hours], rotation=45)
 
 plt.tight_layout()
 plt.show()
+
+# --- 6. Bubble plot: Energy vs Line, bubble size = AVERAGE travel time ---
+
+# Check that the travel time column exists
+if 'Travel Time (min)' not in df.columns:
+    raise KeyError("Expected column 'Travel Time (min)' not found in df.")
+
+# Aggregate per line:
+#   - mean energy consumption (kWh/km)
+#   - mean travel time (min)
+bubble_df = (
+    df[['Line ID', 'Avg Energy (kWh/km)', 'Travel Time (min)']]
+    .dropna()
+    .groupby('Line ID', as_index=False)
+    .agg({
+        'Avg Energy (kWh/km)': 'mean',
+        'Travel Time (min)': 'mean'
+    })
+)
+
+# Rename for clarity
+bubble_df = bubble_df.rename(columns={'Travel Time (min)': 'Avg Travel Time (min)'})
+
+# Filter out any weird zeros (optional)
+bubble_df = bubble_df[bubble_df['Avg Travel Time (min)'] > 0]
+
+# Scale bubble sizes based on average travel time
+max_marker_size = 800  # adjust if bubbles are too big/small
+bubble_df['marker_size'] = (
+    bubble_df['Avg Travel Time (min)'] / bubble_df['Avg Travel Time (min)'].max()
+) * max_marker_size
+
+# Optional: sort by Line ID for nicer x-axis ordering
+bubble_df = bubble_df.sort_values('Line ID')
+
+plt.figure(figsize=(14, 6))
+plt.scatter(
+    bubble_df['Line ID'],
+    bubble_df['Avg Energy (kWh/km)'],
+    s=bubble_df['marker_size'],
+    alpha=0.6,
+    edgecolor='k',
+    color='#4C72B0'
+)
+
+plt.xlabel('Line ID')
+plt.ylabel('Average Energy Consumption (kWh/km)')
+plt.xticks(rotation=90, ha='right', fontsize=8)
+plt.grid(axis='y', linestyle='--', alpha=0.6)
+
+# Build a simple bubble legend for average travel time
+import numpy as np
+legend_fracs = [0.25, 0.5, 0.75, 1.0]
+handles = []
+max_tt = bubble_df['Avg Travel Time (min)'].max()
+for frac in legend_fracs:
+    handles.append(
+        plt.scatter(
+            [], [],
+            s=max_marker_size * frac,
+            edgecolor='k',
+            alpha=0.6,
+            color='#4C72B0',
+            label=f'{max_tt * frac:.1f} min'
+        )
+    )
+
+plt.legend(
+    handles=handles,
+    title='Average travel time',
+    loc='upper right',
+    frameon=True
+)
+
+plt.tight_layout()
+plt.show()

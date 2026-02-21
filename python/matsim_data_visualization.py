@@ -43,13 +43,53 @@ plt.show()
 
 # 2. Scheduled vs Actual Travel Time scatter + 1:1 line
 plt.figure(figsize=(8, 8))
-plt.scatter(df['Scheduled Travel Time (min)'], df['Travel Time (min)'], alpha=0.6, color='#4C72B0', edgecolor='k')
-lims = [min(df['Scheduled Travel Time (min)'].min(), df['Travel Time (min)'].min()),
-        max(df['Scheduled Travel Time (min)'].max(), df['Travel Time (min)'].max())]
+error_per_trip = df['Travel Time (min)'] - df['Scheduled Travel Time (min)']
+sc = plt.scatter(
+    df['Scheduled Travel Time (min)'],
+    df['Travel Time (min)'],
+    c=error_per_trip,
+    cmap='coolwarm',
+    alpha=0.7,
+    edgecolor='k'
+)
+lims = [
+    min(df['Scheduled Travel Time (min)'].min(), df['Travel Time (min)'].min()),
+    max(df['Scheduled Travel Time (min)'].max(), df['Travel Time (min)'].max())
+]
 plt.plot(lims, lims, 'r--', linewidth=2, label='1:1 Line')
 plt.xlabel('Timetable (min)')
 plt.ylabel('Simulated Travel Time (min)')
+plt.colorbar(sc, label='Error (min)')
 plt.legend()
+plt.grid(True, linestyle='--', alpha=0.7)
+plt.tight_layout()
+plt.show()
+
+# 2b. Simulation error vs timetable
+residuals = df['Travel Time (min)'] - df['Scheduled Travel Time (min)']
+mse = np.mean(residuals ** 2)
+rmse = np.sqrt(mse)
+plt.figure(figsize=(8, 6))
+plt.scatter(
+    df['Scheduled Travel Time (min)'],
+    residuals,
+    alpha=0.6,
+    color='#E15759',
+    edgecolor='k'
+)
+plt.axhline(0, color='black', linestyle='--', linewidth=1)
+plt.xlabel('Timetable (min)')
+plt.ylabel('Simulation Error (min)')
+plt.text(
+    0.02,
+    0.98,
+    f"MSE: {mse:.2f} min²\nRMSE: {rmse:.2f} min",
+    transform=plt.gca().transAxes,
+    ha='left',
+    va='top',
+    fontsize=12,
+    bbox=dict(boxstyle='round,pad=0.3', facecolor='white', alpha=0.8, edgecolor='none')
+)
 plt.grid(True, linestyle='--', alpha=0.7)
 plt.tight_layout()
 plt.show()

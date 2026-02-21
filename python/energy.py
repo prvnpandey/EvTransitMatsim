@@ -77,13 +77,13 @@ def calculate_energy_consumption(
     *,
     speed_col: str = "speed",          # m s-¹
     time_col: str = "travel_time",     # s
-    mass_kg: float = 15_500,           # vehicle + pax
+    mass_kg: float = 12_500,           # vehicle + pax
     C_d: float = 0.70,                 # drag coefficient
-    frontal_area_m2: float = 9.0,      # m²
+    frontal_area_m2: float = 7.5,      # m²
     C_rr: float = 0.008,               # rolling-resistance coeff.
-    rho_air: float = 1.225,            # kg m-³
+    rho_air: float = 1.18,            # kg m-³
     eta_traction: float = 0.90,        # drivetrain efficiency (motoring)
-    eta_regen: float = 0.40,           # regen efficiency (braking)
+    eta_regen: float = 0.80,           # regen efficiency (braking)
     g: float = 9.81,                   # m s-²
     grade_col: None = None,            # optional: sin(θ) or %/100
     a_accel_mps2: float = 2.1,         # assumed acceleration [m/s²]

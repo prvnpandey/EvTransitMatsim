@@ -1,46 +1,141 @@
+"""Main"""
+
 import gzip
 import xml.etree.ElementTree as ET
-from collections import defaultdict
-from dbfread import DBF
-import matplotlib.pyplot as plt
 import pandas as pd
-from speed_access import *
+
+
+from speed_access import (
+    parse_events,
+    compute_speeds,
+    compute_travel_time,
+    route_distances
+)
 from xmldf import network_to_df
+from transit.schedule import (
+    get_bus_ids,
+    parse_transit_departures,
+    parse_scheduled_travel_time,
+)
+from transit.departures import create_transit_departures
+from energy import calculate_energy_consumption
+
 from analyze_results import analysis
-from transit.schedule import get_bus_ids
-gzip_event_xml_path = 'python/output_events.xml.gz' 
-gzip_network_xml_path = "python/network/output_network.xml.gz"
-gzip_schedule_xml_path = "python/transit/output_TransitSchedule.xml.gz"
+
+# Will get transit departures from output_TransitSchedule.xml.gz instead of 
+# transit_departures.csv
+CREATE_TRANSIT_DEPARTURES = False
+
+# Will overwrite the transit_departures.csv file based on output_TransitSchedule.xml.gz
+SAVE_DEPARTURES_TO_FILE = False
+
+# If output_events.csv is available, skips loading events from xml tree which 
+# speeds up the process.
+LOAD_EVENTS_FROM_CSV = False 
+
+gzip_event_xml_path = "python/xml/output_events.xml.gz"
+gzip_network_xml_path = "python/xml/output_network.xml.gz"
+gzip_schedule_xml_path = "python/xml/output_transitSchedule.xml.gz"
 
 # Extract the compressed XML network file and get it in a df.
 with gzip.open(gzip_network_xml_path, "rt", encoding="utf-8") as f:
     network_df = network_to_df(f)
 
 # Extract link lengths and freespeeds into dict.
-link_lengths = network_df['length'].to_dict()
-freespeeds = network_df['freespeed'].to_dict()
-print('Link loaded')
+link_lengths = network_df["length"].to_dict()
+freespeeds = network_df["freespeed"].to_dict()
+print("Link loaded")
 
 # Parse events.
+if LOAD_EVENTS_FROM_CSV:
+    events = pd.read_csv(
+        "python/output_events.csv", dtype={"link": str, "actType": str}
+    )
+    print("Events loaded")
+else:
+    with gzip.open(gzip_event_xml_path, "rt", encoding="utf-8") as f:
+        events = parse_events(f)
+    print("Events loaded")
 
-with gzip.open(gzip_event_xml_path, "rt", encoding="utf-8") as f:
-    events = parse_events(f)
-print('Events loaded')
-
-
-# Iterate through the transit schedule.
-busline_list = ['1']
-reference_trip_dict = {}
 with gzip.open(gzip_schedule_xml_path, "rt", encoding="utf-8") as f:
     schedule_tree = ET.parse(f)
-for line in busline_list:
-    reference_trip_dict[line] = get_bus_ids(schedule_tree, line)
-    for bus in reference_trip_dict[line]:
-        speed_results = compute_speeds(events, network_df, id_filter=bus, v_s=1.0)
-        break
+print("Schedule loaded")
+
+if CREATE_TRANSIT_DEPARTURES:
+    dep_df = create_transit_departures(schedule_tree, save=SAVE_DEPARTURES_TO_FILE)
+else:
+    departure_path = "python/transit_departures.csv"
+
+    dep_df = pd.read_csv(departure_path)
+
+departure_shape_dict = parse_transit_departures(dep_df)    
+
+
+travel_time_output_cols = {
+    "Line ID": pd.Series(dtype="str"),
+    "Shape ID": pd.Series(dtype="str"),
+    "Departure Time": pd.Series(dtype="str"),
+    "Vehicle ID": pd.Series(dtype="str"),
+    "Scheduled Travel Time (min)": pd.Series(dtype="float"),
+    "Travel Time (min)": pd.Series(dtype="float"),
+    "Distance (m)": pd.Series(dtype="float"),
+    "Energy Consumption (kWh)": pd.Series(dtype="float"),
+}
+
+TT_output_df = pd.DataFrame(travel_time_output_cols)
+
+travel_time_tuple = ({}, {})
+
+
+
+
+try:
+    total_lines = len(departure_shape_dict)
+    completed_lines = 0
+    for line, shapes in departure_shape_dict.items():
+        print(f"line: {line}")
+        bus_id_tuple = get_bus_ids(schedule_tree, line, shapes)
+        schedule_time_tuple = parse_scheduled_travel_time(schedule_tree, line, shapes)
+
+        for i, shape in enumerate(shapes):
+            distance = route_distances(line, shape, schedule_tree, network_df)
+            for time, bus in bus_id_tuple[i].items():
+                speed_results = compute_speeds(
+                    events, network_df, id_filter=bus, v_s=1.0
+                )
+                if speed_results.empty:
+                    travel_time_tuple[i][time] = "no_events"
+                    energy_consumption = 0
+                else:
+                    travel_time_tuple[i][time] = compute_travel_time(speed_results)
+                    energy_consumption = calculate_energy_consumption(speed_results)
+            
+                output_row = {
+                    "Line ID": line,
+                    "Shape ID": shape,
+                    "Departure Time": time,
+                    "Vehicle ID": bus_id_tuple[i][time],
+                    "Scheduled Travel Time (min)": schedule_time_tuple[i][time],
+                    "Travel Time (min)": travel_time_tuple[i][time],
+                    "Distance (m)": distance,
+                    "Energy Consumption (kWh)": energy_consumption,
+                }
+                TT_output_df = pd.concat(
+                    [TT_output_df, pd.DataFrame([output_row])], ignore_index=True
+                )
+        completed_lines += 1
+        print(f"{(completed_lines/total_lines)*100:.2f}% of lines completed")
+
+
+except KeyboardInterrupt:
+    TT_output_df.to_csv("python/transit_departure_updated_energy_SMALLfleet.csv")
+    print("saved partial departures ")
+    raise
+
+
 # Compute speeds.
 
+TT_output_df.to_csv("python/transit_departure_updated_energy_SMALLfleet.csv")
+print("saved departure ")
 
-
-
-analysis(speed_results, freespeeds)
+#analysis(speed_results, freespeeds)
